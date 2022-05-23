@@ -40,28 +40,28 @@ func (p pokemonRepository) GetPokemonById(id uint64) (*model.Pokemon, error) {
 		}
 	}
 
-	return nil, nil
+	return nil, errors.New("Pokemon Not Found")
 }
 
 func getAllPokemons() ([]*model.Pokemon, error) {
-	var pokemons []*model.Pokemon
 	rows, err := openAndGetCSVData()
 
 	if err != nil {
-		return pokemons, err
+		return nil, err
 	}
 
-	pokemons, err = transformRowsToPokemons(pokemons, rows)
+	pokemons, err := transformRowsToPokemons(rows)
 
 	if err != nil {
-		return pokemons, err
+		return nil, err
 	}
 
 	return pokemons, nil
 
 }
 
-func transformRowsToPokemons(pokemons []*model.Pokemon, rows [][]string) ([]*model.Pokemon, error) {
+func transformRowsToPokemons(rows [][]string) ([]*model.Pokemon, error) {
+	var pokemons []*model.Pokemon
 	for _, row := range rows {
 		pokemon := new(model.Pokemon)
 		stringId := row[0]
@@ -90,7 +90,7 @@ func openAndGetCSVData() ([][]string, error) {
 	}
 
 	reader := csv.NewReader(f)
-	reader.Read()
+	_, _ = reader.Read()
 
 	rows, err := reader.ReadAll()
 

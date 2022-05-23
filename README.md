@@ -130,7 +130,7 @@ For run the project one must type the following on console in the root of the pr
 
 > go get && go run ./main.go
 
-once you run these commands the application will be running on the port [8000](http://localhost:8000/pokemons) of the local host
+once you run these commands the application will be running on the port [8000](http://localhost:8000/pokemons) of the localhost
 
 ## Documentation
 

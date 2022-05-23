@@ -30,15 +30,11 @@ func (p pokemonController) GetPokemonById(c echo.Context) error {
 	}
 
 	pokemon, err := p.pokemonRepository.GetPokemonById(id)
-
-	if pokemon == nil && err == nil {
-		return c.JSON(http.StatusNotFound, "pokemon not found")
-	} else if err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
+	if err != nil {
+		return c.JSON(http.StatusNotFound, err)
 	}
 
 	return c.JSON(http.StatusOK, pokemon)
-
 }
 
 func (p pokemonController) GetPokemons(c echo.Context) error {
