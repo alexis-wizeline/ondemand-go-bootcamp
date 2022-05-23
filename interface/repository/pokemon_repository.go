@@ -3,6 +3,7 @@ package repository
 import (
 	"encoding/csv"
 	"errors"
+	"fmt"
 	"os"
 	"strconv"
 
@@ -41,6 +42,29 @@ func (p pokemonRepository) GetPokemonById(id uint64) (*model.Pokemon, error) {
 	}
 
 	return nil, errors.New("Pokemon Not Found")
+}
+
+func (p pokemonRepository) StorePokemons(pokemons []*model.Pokemon) error {
+	existingIds, err := getPokemonIdMap()
+	if err != nil {
+		return err
+	}
+
+	writer, err := getCsvWriter()
+	defer writer.Flush()
+	if err != nil {
+		return err
+	}
+	for _, pokemon := range pokemons {
+		if ok := existingIds[pokemon.ID]; !ok {
+			id := fmt.Sprintf("%v", pokemon.ID)
+			if err = writer.Write([]string{id, pokemon.Name, pokemon.Type}); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
 }
 
 func getAllPokemons() ([]*model.Pokemon, error) {
@@ -99,4 +123,26 @@ func openAndGetCSVData() ([][]string, error) {
 	}
 
 	return rows, nil
+}
+
+func getCsvWriter() (*csv.Writer, error) {
+	f, err := os.OpenFile("./data/Pokemon.csv", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+	if err != nil {
+		return nil, err
+	}
+	return csv.NewWriter(f), nil
+}
+
+func getPokemonIdMap() (map[uint64]bool, error) {
+	pokemons, err := getAllPokemons()
+	result := make(map[uint64]bool)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, pokemon := range pokemons {
+		result[pokemon.ID] = true
+	}
+
+	return result, nil
 }
