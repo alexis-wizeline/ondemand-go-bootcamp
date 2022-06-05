@@ -1,9 +1,12 @@
 package repository
 
-import "github.com/alexis-wizeline/ondemand-go-bootcamp/domain/model"
+import (
+	"github.com/alexis-wizeline/ondemand-go-bootcamp/domain/model"
+)
 
 type PokemonRepository interface {
 	GetPokemons() ([]*model.Pokemon, error)
+	GetPokemonsConcurrently(t string, items, itemsPerWorker int) ([]*model.Pokemon, error)
 	GetPokemonById(id uint64) (*model.Pokemon, error)
 	StorePokemons(pokemons []*model.Pokemon) error
 }

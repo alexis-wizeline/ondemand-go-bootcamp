@@ -17,6 +17,7 @@ type pokemonController struct {
 
 type PokemonController interface {
 	GetPokemons(c echo.Context) error
+	GetPokemonsConcurrently(c echo.Context) error
 	GetPokemonById(c echo.Context) error
 	CallGateway(c echo.Context) error
 }
@@ -45,6 +46,24 @@ func (p pokemonController) GetPokemons(c echo.Context) error {
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, pokemons)
+}
+
+func (p pokemonController) GetPokemonsConcurrently(c echo.Context) error {
+	t := c.QueryParam("type")
+	items, err := strconv.Atoi(c.QueryParam("items"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+	itemsPerWorker, err := strconv.Atoi(c.QueryParam("items_per_worker"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+	pokemons, err := p.pokemonRepository.GetPokemonsConcurrently(t, items, itemsPerWorker)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
 	}
 
 	return c.JSON(http.StatusOK, pokemons)

@@ -16,6 +16,7 @@ func NewRouter(api *echo.Echo) *echo.Echo {
 
 	pokemons := api.Group("pokemons")
 	pokemons.GET("*", pc.GetPokemons)
+	pokemons.GET("/concurrent", pc.GetPokemonsConcurrently)
 	pokemons.GET("/:id", pc.GetPokemonById)
 	pokemons.GET("/external", pc.CallGateway)
 
