@@ -153,8 +153,8 @@ func worker(pokemonChan chan<- *model.Pokemon, wg *sync.WaitGroup, mu *sync.Mute
 
 		if shouldPokemonBeAdded(t, pokemon.ID) {
 			pokemonChan <- pokemon
+			processedPokemon++
 		}
-		processedPokemon++
 	}
 
 }
